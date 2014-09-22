@@ -1,15 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <signal.h>
-#include <unistd.h>
-
-#define MAX_REMINDERS 100
-#define MAX_REMINDER_LEN 140 //length of reminder string
-
-//reminder array
-char reminders[MAX_REMINDERS][MAX_REMINDER_LEN];
-
-void read_reminders(char *filename);
+#include "reminder.h"
 
 int main(int argc, char **argv){
 	if(argc < 2){
@@ -17,9 +6,21 @@ int main(int argc, char **argv){
 		printf("usage:\n\tmyreminder filename\n");
 		exit(-1);
 	}
+	// initialize globals
+	number_of_reminders = 0;
+	next_reminder = 0;
+
+	struct sigaction sigact;
+	sigact.sa_handler = &reminder_handler;
+	sigact.sa_flags = SA_RESTART;
+	sigfillset(&sigact.sa_mask);
+	if(sigaction(SIGALRM, &sigact, NULL) == -1){
+		printf("Error setting signal handler\n");
+		exit(-1);
+	}
+
 	read_reminders(argv[1]);
-}
-
-void read_reminders(char *filename){
-
+	alarm(alarm_times[0]);
+	while(next_reminder < number_of_reminders){
+	}
 }

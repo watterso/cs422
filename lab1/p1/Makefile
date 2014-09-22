@@ -1,5 +1,7 @@
+files = reminder.c read_reminders.c register_reminder.c reminder_handler.c
+
 all:
-	gcc reminder.c -o myreminder
+	gcc $(files) -o myreminder
 
 clean:
 	rm -rf myreminder
