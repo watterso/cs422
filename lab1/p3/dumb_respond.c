@@ -27,6 +27,7 @@ void dumb_respond(int port_number){
 	while(1){
 		bytes_received = recvfrom(socket_fd, payload, PAYLOAD_SIZE, 0, (struct sockaddr *) &client_addr, &addrlen);
 		if (bytes_received > 0) {
+			printf("received message: \"%s\"\n", payload);
 			sendto(socket_fd, DUMB_MSG, strlen(DUMB_MSG), 0, (struct sockaddr *) &client_addr, addrlen);
 		}
 	}
