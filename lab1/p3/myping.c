@@ -17,11 +17,11 @@ int main(int argc, char** argv){
 	}
 	memset((char*)&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(port_number);
+	server_addr.sin_port = port_number;
 	memcpy((void *)&server_addr.sin_addr, argv[1], strlen(argv[1]));
 
 	int payload[PAYLOAD_SIZE] = {0};
-
+	printf("sending to %d at %s\n", server_addr.sin_port, &server_addr.sin_addr);
 	if(sendto(socket_fd, payload, PAYLOAD_SIZE, 0, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
 		printf("Failed to send packet\n");
 		exit(-1);
