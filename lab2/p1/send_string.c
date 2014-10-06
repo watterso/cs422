@@ -12,7 +12,7 @@ void send_string(char* ip, int port, char* string, int size){
 	server_addr.sin_addr.s_addr = inet_addr(ip);
 	server_addr.sin_port = htons(port);
 
-	printf("sending to %d at %s\n", server_addr.sin_port, inet_ntoa(server_addr.sin_addr));
+	//printf("sending to %d at %s\n", server_addr.sin_port, inet_ntoa(server_addr.sin_addr));
 	if(sendto(socket_fd, string, size, 0, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
 		printf("Failed to send packet\n");
 		exit(-1);
