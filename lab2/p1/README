@@ -1,0 +1,5 @@
+Usage is as described in the lab specs.
+
+the max number of reminders and the length of a reminder is controlled in reminder.h.
+max number of reminders: MAX_REMINDERS (defaults to 100)
+max length of a reminder (number+text): MAX_REMINDER_LEN (defaults to 140)
