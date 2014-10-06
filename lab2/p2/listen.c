@@ -1,5 +1,9 @@
 #include "reminder.h"
 
+/*
+ * Loops depending on the function specified by loop_condition function pointer
+ * and handles each incoming packet with the provided handle_packet function pointer.
+ */
 void mylisten(int port_number, int (*loop_condition)(),
 						void (*handle_packet)(int, char*, struct sockaddr_in*,
 						struct sockaddr_in*)){
