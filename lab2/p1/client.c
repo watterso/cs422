@@ -16,8 +16,10 @@ int main(int argc, char **argv){
 
 	secret_len = (int) strlen(argv[3]);
 	strncpy(secret, argv[3], PAYLOAD_SIZE);
-
+	
+	//register with server
 	send_string(argv[1], global_port, secret, secret_len);
+	//listen for server messages
 	mylisten(global_port, &myloop_condition, &mypacket_handler);
 }
 

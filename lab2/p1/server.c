@@ -31,6 +31,7 @@ int main(int argc, char **argv){
 
 	read_reminders(argv[1]);
 	alarm(alarm_times[0]);
+	//listen for client registration
 	mylisten(global_port, &myloop_condition, &mypacket_handler);
 }
 

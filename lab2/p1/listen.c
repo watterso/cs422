@@ -1,5 +1,9 @@
 #include "reminder.h"
 
+/*
+ * Loops depending on the function specified by loop_condition function pointer
+ * and handles each incoming packet with the provided handle_packet function pointer.
+ */
 void mylisten(int port_number, int (*loop_condition)(),
 						void (*handle_packet)(int, char*, struct sockaddr_in*,
 						struct sockaddr_in*)){
@@ -26,12 +30,15 @@ void mylisten(int port_number, int (*loop_condition)(),
 	int bytes_received;
 	struct sockaddr_in client_addr;
 	socklen_t addrlen = sizeof(client_addr);
-	printf("Now listing on port %d\n", port_number);
+	printf("Now listening on port %d\n", port_number);
+	//loop using provided function condition
 	while(loop_condition()){
 		bytes_received = recvfrom(socket_fd, payload, PAYLOAD_SIZE, 0,
 			(struct sockaddr *) &client_addr, &addrlen);
 		if (bytes_received > 0) {
 			//printf("received payload: \"%s\"\n", payload);
+
+			//handle_packet using provided function
 			handle_packet(bytes_received, payload, &server_addr, &client_addr);
 			//sendto(socket_fd, DUMB_MSG, strlen(DUMB_MSG), 0, (struct sockaddr *) &client_addr, addrlen);
 		}
