@@ -43,7 +43,7 @@ void mypacket_handler(int size, char* payload, struct sockaddr_in* local,
 	payload++;
 	if(flags & ACK){
 		alarm(0);
-		printf("ACK RECEIVED\n");
+		//printf("ACK RECEIVED\n");
 	}else{
 		struct timeval now;
 		gettimeofday(&now, NULL);
@@ -53,7 +53,7 @@ void mypacket_handler(int size, char* payload, struct sockaddr_in* local,
 
 		write(STDOUT_FILENO, buffer, 9);
 		write(STDOUT_FILENO, separator, 3);
-		write(STDOUT_FILENO, payload, size);
+		write(STDOUT_FILENO, payload, size-1);
 		write(STDOUT_FILENO, "\n", 1);
 	}
 }

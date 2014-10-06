@@ -26,7 +26,7 @@ void mylisten(int port_number, int (*loop_condition)(),
 	int bytes_received;
 	struct sockaddr_in client_addr;
 	socklen_t addrlen = sizeof(client_addr);
-	printf("Now listing on port %d\n", port_number);
+	printf("Now listening on port %d\n", port_number);
 	while(loop_condition()){
 		bytes_received = recvfrom(socket_fd, payload, PAYLOAD_SIZE, 0,
 			(struct sockaddr *) &client_addr, &addrlen);

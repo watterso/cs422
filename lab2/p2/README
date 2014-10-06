@@ -5,3 +5,5 @@ max number of reminders: MAX_REMINDERS (defaults to 100)
 max length of a reminder (number+text): MAX_REMINDER_LEN (defaults to 140)
 
 ACK_WAIT (also defined in reminder.h) controls the timeout for waiting for an ACK.
+
+Secret size is limited by PAYLOAD_SIZE. In practice it should be no larger than PAYLOAD_SIZE - 1 because of ACK overhead.

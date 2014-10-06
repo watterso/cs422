@@ -16,7 +16,7 @@ void send_string(char* ip, int port, char* string, int size, char flags){
 	buffer[0] = flags;
 	strncpy(buffer+1, string, size);
 
-	printf("sending to %d at %s\n", server_addr.sin_port, inet_ntoa(server_addr.sin_addr));
+	//printf("sending to %d at %s\n", server_addr.sin_port, inet_ntoa(server_addr.sin_addr));
 	if(sendto(socket_fd, buffer, size+1, 0, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
 		printf("Failed to send packet\n");
 		exit(-1);
