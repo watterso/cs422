@@ -1,4 +1,4 @@
-#include "reminder.h"
+#include "myping.h"
 
 void send_buffer(char* ip, int port, char* payload, int size, char flags){
 	struct sockaddr_in server_addr;    
