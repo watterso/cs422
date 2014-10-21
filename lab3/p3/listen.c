@@ -22,7 +22,7 @@ void mylisten(int port_number, int (*loop_condition)(),
 	server_addr.sin_port = htons(port_number);
 
 	if (bind(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-		printf("Failed to bind socket\n");
+		printf("Failed to bind socket: %s\n", strerror(errno));
 		exit(-1);
 	}
 
@@ -34,6 +34,7 @@ void mylisten(int port_number, int (*loop_condition)(),
 	while(loop_condition()){
 		bytes_received = recvfrom(socket_fd, payload, PAYLOAD_SIZE, 0,
 			(struct sockaddr *) &client_addr, &addrlen);
+		//printf("looooopy\n");
 		if (bytes_received > 0) {
 			//printf("received payload: \"%s\"\n", payload);
 			handle_packet(bytes_received, payload, &server_addr, &client_addr);
