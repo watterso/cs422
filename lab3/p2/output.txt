@@ -1,0 +1,22 @@
+=======TCP=======
+Time to 128.10.25.109 is 0.314000 milliseconds
+Time to 128.10.25.109 is 0.313000 milliseconds
+Time to 128.10.25.109 is 0.314000 milliseconds
+Time to 128.10.25.109 is 0.310000 milliseconds
+Time to 128.10.25.109 is 0.309000 milliseconds
+Time to 128.10.25.109 is 0.309000 milliseconds
+Time to 128.10.25.109 is 0.313000 milliseconds
+Time to 128.10.25.109 is 0.317000 milliseconds
+Time to 128.10.25.109 is 0.310000 milliseconds
+Time to 128.10.25.109 is 0.311000 milliseconds
+=======UDP=======
+Time to 128.10.25.109 is 0.248000 milliseconds
+Time to 128.10.25.109 is 0.231000 milliseconds
+Time to 128.10.25.109 is 0.233000 milliseconds
+Time to 128.10.25.109 is 0.235000 milliseconds
+Time to 128.10.25.109 is 0.231000 milliseconds
+Time to 128.10.25.109 is 0.229000 milliseconds
+Time to 128.10.25.109 is 0.234000 milliseconds
+Time to 128.10.25.109 is 0.233000 milliseconds
+Time to 128.10.25.109 is 0.224000 milliseconds
+Time to 128.10.25.109 is 0.230000 milliseconds
