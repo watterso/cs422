@@ -3,6 +3,7 @@
 void copy_file(int in_file, int out_file){
 	char buffer[WINDOW_SIZE];
 	int num_read = read(in_file, buffer, WINDOW_SIZE);
+	//set reads on in_file to non-blocking
 	fcntl(in_file, F_SETFL, O_NONBLOCK);
 	if(strncmp(buffer, "INVALID REQUEST", 15)==0){
 		printf("len:%d, %s\n", strlen(buffer), buffer);

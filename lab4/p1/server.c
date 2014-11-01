@@ -57,6 +57,7 @@ int main(int argc, char **argv){
 		int num_read = read(new_socket, buffer, WINDOW_SIZE);
 		struct stat file_stat;
 		printf("got it!\ngetting stat.....");
+		//check if valid file
 		int file_ret = stat(buffer, &file_stat);
 		printf("got it!\nfile(%d) req'd: %s\n", strlen(buffer), buffer);
 		if(access(buffer, R_OK) == 0 && file_ret >=0){
@@ -69,6 +70,7 @@ int main(int argc, char **argv){
 				printf("GOOD REQUEST.... GO!\n");
 				if(req_fd > 0){
 					printf("req_fd: %d\n", req_fd);
+					//send file over socket
 					copy_file(req_fd, remote_socket);
 					close(req_fd);
 				}

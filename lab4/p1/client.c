@@ -32,9 +32,11 @@ int main(int argc, char **argv){
 	char buf[PAYLOAD_SIZE];
 	//printf("len: %d, for: '%s'\n", strlen(argv[3]), argv[3]);
 	strcat(argv[3], "\0");
+	//Send file request
 	write(socket_fd, argv[3], strlen(argv[3])+1);
 	int out_file = open(argv[4], O_RDWR | O_CREAT, 0666);
 	//printf("out_file: %d\n", out_file);
+	//Read from socket and save to file
 	copy_file(socket_fd, out_file);
 	close(out_file);
 	gettimeofday(&after, NULL);
