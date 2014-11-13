@@ -33,11 +33,11 @@ struct timeval before;
 struct timeval after;
 
 //circular buffer resources
+#define CIRC_MAX_SIZE PACKET_SIZE*WINDOW_SIZE
 int circ_index;
 int circ_size;
-int circ_max_size = PACKET_SIZE*WINDOW_SIZE;
-char circ_window[circ_size];
-int circ_read(char* target, int n);
+char circ_window[CIRC_MAX_SIZE];
+int circ_peek(char* target, int n);
 void circ_step(int n);
 int circ_space();
 int circ_write(int fd, int n);
@@ -46,4 +46,5 @@ void mylisten(int port_number, int (*loop_condition)(),
 							void (*handle_packet)(int, char*, struct sockaddr_in* local,
 							struct sockaddr_in* remote));
 void send_buffer(char* ip, int port, char* payload, int size);
+void send_buffer_sock(struct sockaddr_in targ, char* payload, int size);
 void zombie_handler(int sig);
