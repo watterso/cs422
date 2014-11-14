@@ -9,6 +9,15 @@ int main(int argc, char **argv){
 		exit(-1);
 	}
 
+	struct sigaction sigact;
+	sigact.sa_handler = &packetloss_handler;
+	sigact.sa_flags = SA_RESTART;
+	sigfillset(&sigact.sa_mask);
+	if(sigaction(SIGALRM, &sigact, NULL) == -1){
+		printf("Error setting signal handler\n");
+		exit(-1);
+	}
+
 	//set globals
 	global_port = DEFAULT_PORT;
 	sscanf(argv[2], "%d", &global_port);
@@ -45,6 +54,7 @@ int myloop(){
 
 void myhandle_packet(int size, char* payload, struct sockaddr_in* local,
 		struct sockaddr_in* remote){
+	remote->sin_port = htons(global_port);
 	int combined_size = PACKET_SIZE +1;
 	printf("bytes received: %d\n", size);
 	//Integer division truncating means incomplete packets go unnoticed
@@ -56,6 +66,7 @@ void myhandle_packet(int size, char* payload, struct sockaddr_in* local,
 	int num_packets = 0;
 	for(i; i<num_pot_packets; i++){
 		char pack_ind = payload[i*combined_size];
+		printf("%d|", pack_ind);
 		if(prev_pack_ind!= -1){
 			int tmp = (prev_pack_ind+1)%PACKET_IND_LIMIT;
 			if(pack_ind != tmp) break; //If the next packet we want isn't there stop checking
@@ -76,6 +87,7 @@ void myhandle_packet(int size, char* payload, struct sockaddr_in* local,
 		if(dbl_chk_sum ==0){
 			//SERVER SAYS DONE
 			packet_index = -1;
+			alarm(0);
 			return;
 		}
 	}
@@ -87,16 +99,19 @@ void myhandle_packet(int size, char* payload, struct sockaddr_in* local,
 	buffer[0] = latest_packet_ind;
 	strcpy(buffer+1, req_filename);
 	send_buffer_sock(*remote, buffer, combined_size);
+	memcpy(&remote_conn, remote, sizeof(remote_conn));
+	alarm(2);
 
 	i = 0;
-	for(i; i<num_packets; i++){
-		char c = *(payload+(i*combined_size)+PACKET_SIZE);
-		int j = 0;
-		while(c==0 && j<PACKET_SIZE){
-			c = *(payload+(i*combined_size)+PACKET_SIZE-j);
-			if(c==0) j++;
-		}
-		printf("packet is %d bytes long\n", PACKET_SIZE-j);
-		fwrite(payload+(i*combined_size)+1, PACKET_SIZE-j, 1, myfile);
+	for(i; i<num_packets-1; i++){
+		fwrite(payload+(i*combined_size)+1, PACKET_SIZE, 1, myfile);
 	}
+	char c = *(payload+(i*combined_size)+PACKET_SIZE);
+	int j = 0;
+	while(c==0 && j<PACKET_SIZE){
+		c = *(payload+(i*combined_size)+PACKET_SIZE-j);
+		if(c==0) j++;
+	}
+	printf("packet is %d bytes long\n", PACKET_SIZE-j);
+	fwrite(payload+((num_packets-1)*combined_size)+1, PACKET_SIZE-j, 1, myfile);
 }

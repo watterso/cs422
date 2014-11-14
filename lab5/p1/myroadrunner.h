@@ -29,6 +29,7 @@ int req_fd;
 int global_port;
 int packet_index;
 FILE * myfile;
+struct sockaddr_in* remote_conn;
 
 struct timeval before;
 struct timeval after;
@@ -38,7 +39,7 @@ struct timeval after;
 int circ_index;
 int circ_size;
 char circ_window[CIRC_MAX_SIZE];
-int circ_peek(char* target, int n);
+int circ_peek(char* target, int n, int offset);
 void circ_step(int n);
 int circ_space();
 int circ_write(int fd, int n);
@@ -49,3 +50,4 @@ void mylisten(int port_number, int (*loop_condition)(),
 void send_buffer(char* ip, int port, char* payload, int size);
 void send_buffer_sock(struct sockaddr_in targ, char* payload, int size);
 void zombie_handler(int sig);
+void packetloss_handler(int sig);

@@ -1,4 +1,4 @@
-files = circle_buffer.c listen.c send_buffer.c zombie_handler.c
+files = circle_buffer.c listen.c packetloss_handler.c send_buffer.c zombie_handler.c
 
 all: client server
 

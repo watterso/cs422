@@ -14,15 +14,18 @@ int circ_write(int fd, int n){
 		circ_window[offset + i] = buff[i];
 	}
 	circ_size += num_read;
+	printf("read in %d\n", num_read);
 	return num_read;
 
 }
 //Read from circular buffer without incrementing circ_index
-int circ_peek(char* target, int n){
+int circ_peek(char* target, int n, int offset){
 	int i = 0;
 	int cnt = 0;
+	int max = n > circ_size ? circ_size : n;
+	if(offset > circ_size) return 0;
 	for(i; i<n && i<circ_size; i++){
-		int loc = (circ_index + i) % CIRC_MAX_SIZE;
+		int loc = (circ_index+offset + i) % CIRC_MAX_SIZE;
 		target[i] = circ_window[loc];
 		cnt++;
 	}
@@ -31,9 +34,9 @@ int circ_peek(char* target, int n){
 
 //Step circ_index n times
 void circ_step(int n){
-	printf("step %d times\n", n);
 	circ_index = (circ_index + n) % CIRC_MAX_SIZE;
 	circ_size = n > circ_size ? 0 : circ_size - n;
+	printf("step %d times, size now %d\n", n, circ_size);
 }
 
 //Returns the number of free bytes in the buffer
