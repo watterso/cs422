@@ -13,9 +13,9 @@
 
 #define DEFAULT_PORT 54269
 #define FRAME_SIZE 24				//# of packets per frame 
-#define MAX_PACKET_IND
+#define PACKET_IND_LIMIT 256
 #define PACKET_SIZE 1024		//# of bytes per packet
-#define PAYLOAD_SIZE PACKET_SIZE*FRAME_SIZE
+#define PAYLOAD_SIZE (PACKET_SIZE*FRAME_SIZE)
 #define WINDOW_SIZE 50			//# of packets per window
 
 typedef struct
@@ -28,12 +28,13 @@ char req_filename[PACKET_SIZE];
 int req_fd;
 int global_port;
 int packet_index;
+FILE * myfile;
 
 struct timeval before;
 struct timeval after;
 
 //circular buffer resources
-#define CIRC_MAX_SIZE PACKET_SIZE*WINDOW_SIZE
+#define CIRC_MAX_SIZE (PACKET_SIZE*WINDOW_SIZE)
 int circ_index;
 int circ_size;
 char circ_window[CIRC_MAX_SIZE];

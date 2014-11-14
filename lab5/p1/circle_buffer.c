@@ -10,25 +10,28 @@ int circ_write(int fd, int n){
 	int num_read = read(fd, buff, to_write);
 
 	int i = 0;
-	for(i; i<to_write; i++){
+	for(i; i<num_read; i++){
 		circ_window[offset + i] = buff[i];
 	}
-	circ_size += to_write;
-	return to_write;
+	circ_size += num_read;
+	return num_read;
 
 }
 //Read from circular buffer without incrementing circ_index
 int circ_peek(char* target, int n){
 	int i = 0;
-	int offset = (circ_index + circ_size) % CIRC_MAX_SIZE;
-	for(i; i<n; i++){
-		target[i] = circ_window[(offset + i) % CIRC_MAX_SIZE];
+	int cnt = 0;
+	for(i; i<n && i<circ_size; i++){
+		int loc = (circ_index + i) % CIRC_MAX_SIZE;
+		target[i] = circ_window[loc];
+		cnt++;
 	}
-	return n;
+	return cnt;
 }
 
 //Step circ_index n times
 void circ_step(int n){
+	printf("step %d times\n", n);
 	circ_index = (circ_index + n) % CIRC_MAX_SIZE;
 	circ_size = n > circ_size ? 0 : circ_size - n;
 }
