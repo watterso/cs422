@@ -114,12 +114,15 @@ void myhandle_packet(int size, char* payload, struct sockaddr_in* local,
 	for(i; i<num_packets-1; i++){
 		fwrite(payload+(i*combined_size)+1, PACKET_SIZE, 1, myfile);
 	}
-	char c = *(payload+(i*combined_size)+PACKET_SIZE);
+	/*char c = *(payload+(i*combined_size)+PACKET_SIZE);
 	int j = 0;
 	while(c==0 && j<PACKET_SIZE){
 		c = *(payload+(i*combined_size)+PACKET_SIZE-j);
 		if(c==0) j++;
 	}
-	printf("packet is %d bytes long\n", PACKET_SIZE-j);
 	fwrite(payload+((num_packets-1)*combined_size)+1, PACKET_SIZE-j, 1, myfile);
+	printf("packet is %d bytes long\n", PACKET_SIZE-j);*/
+	int last_packet_size = size-(num_packets-1)*combined_size-1;
+	printf("last packet is %d bytes long\n", last_packet_size);
+	fwrite(payload+((num_packets-1)*combined_size)+1, last_packet_size, 1, myfile);
 }

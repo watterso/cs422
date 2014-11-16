@@ -30,7 +30,6 @@ int main(int argc, char **argv){
 	mylisten(global_port, &myloop, &mypacket_handler);
 }
 int myloop(){
-	printf("loop!\n");
 	return 1;
 }
 
@@ -95,7 +94,7 @@ void mypacket_handler(int num_received, char* payload, struct sockaddr_in* local
 	}else{
 		send_buffer_sock(*remote, buffer, i*(PACKET_SIZE+1));
 	}*/
-	send_buffer_sock(*remote, buffer, total_peek);
+	send_buffer_sock(*remote, buffer, total_peek+i+1);
 	int num_read = circ_write(req_fd, diff*PACKET_SIZE);
 	printf("last_packet_sent: %d\n", last_packet_sent);
 	if(num_read == 0 && last_packet_rec == last_packet_sent){

@@ -9,6 +9,7 @@ int circ_write(int fd, int n){
 	int offset = (circ_index + circ_size) % CIRC_MAX_SIZE;
 	char buff[to_write];
 	int num_read = read(fd, buff, to_write);
+	if(num_read<0) num_read = 0;
 	printf("Read %d bytes from file\n", num_read);
 	int i = 0;
 	for(i; i<num_read; i++){
@@ -35,6 +36,7 @@ int circ_peek(char* target, int n, int offset){
 
 //Step circ_index n times
 void circ_step(int n){
+	printf("step %d times, size at start: %d\n", n, circ_size);
 	circ_index = (circ_index + n) % CIRC_MAX_SIZE;
 	circ_size = n > circ_size ? 0 : circ_size - n;
 	printf("step %d times, size now %d\n", n, circ_size);
