@@ -2,6 +2,7 @@
 int myloop();
 void mypacket_handler(int num_received, char* payload, struct sockaddr_in* local,
 		struct sockaddr_in* remote);
+void send_eof(struct sockaddr_in* remote);
 
 int main(int argc, char **argv){
 	if(argc < 2){
@@ -29,6 +30,7 @@ int main(int argc, char **argv){
 	mylisten(global_port, &myloop, &mypacket_handler);
 }
 int myloop(){
+	printf("loop!\n");
 	return 1;
 }
 
@@ -53,7 +55,12 @@ void mypacket_handler(int num_received, char* payload, struct sockaddr_in* local
 	}
 	int diff = last_packet_rec >= packet_index ? last_packet_rec - packet_index :
 		PACKET_IND_LIMIT - packet_index + last_packet_rec;
+	printf("last_packet_rec: %d, packet_index: %d, diff:%d\n", last_packet_rec, packet_index, diff);
 	circ_step(diff*PACKET_SIZE);
+	packet_index = (packet_index + diff) % PACKET_IND_LIMIT;
+	if(circ_size == 0){
+		send_eof(remote);
+	}
 	char buffer[FRAME_SIZE*(PACKET_SIZE+1)] = {0}; //+1 for index 
 	int i =0;
 	int total_peek = 0;
@@ -90,6 +97,11 @@ void mypacket_handler(int num_received, char* payload, struct sockaddr_in* local
 	int num_read = circ_write(req_fd, diff*PACKET_SIZE);
 	printf("last_packet_sent: %d\n", last_packet_sent);
 	if(num_read == 0 && last_packet_rec == last_packet_sent){
+		send_eof(remote);
+	}
+
+}
+void send_eof(struct sockaddr_in* remote){
 		//EOF
 		printf("EOF\n");
 		char eof_err[FRAME_SIZE*(PACKET_SIZE+1)] = {0};
@@ -102,7 +114,4 @@ void mypacket_handler(int num_received, char* payload, struct sockaddr_in* local
 		circ_index = 0;
 		circ_size = 0;
 		memset(circ_window, 0, CIRC_MAX_SIZE);
-	}
-
 }
-

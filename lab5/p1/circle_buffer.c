@@ -2,16 +2,17 @@
 
 //Read n bytes from file descriptor fd and insert into circular buffer 
 int circ_write(int fd, int n){
+	printf("write:\n\tind:%d\n\tsize:%d\n\tspace:%d\n", circ_index, circ_size, circ_free_space());
 	int to_write = n > circ_free_space() ? circ_free_space() : n;
 	if(to_write == 0) return 0;
 
 	int offset = (circ_index + circ_size) % CIRC_MAX_SIZE;
 	char buff[to_write];
 	int num_read = read(fd, buff, to_write);
-
+	printf("Read %d bytes from file\n", num_read);
 	int i = 0;
 	for(i; i<num_read; i++){
-		circ_window[offset + i] = buff[i];
+		circ_window[(offset + i)%CIRC_MAX_SIZE] = buff[i];
 	}
 	circ_size += num_read;
 	printf("read in %d\n", num_read);

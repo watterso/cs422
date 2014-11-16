@@ -23,8 +23,9 @@ int main(int argc, char **argv){
 	sscanf(argv[2], "%d", &global_port);
 
 	//printf("len: %d, for: '%s'\n", strlen(argv[3]), argv[3]);
-	strcat(argv[3], "\0");
 	strcpy(req_filename, argv[3]);
+	printf("file_req:%s\n", req_filename);
+	strcat(argv[3], "\0");
 
 	//Send initial request
 	char init_req[PACKET_SIZE+1];
@@ -32,10 +33,15 @@ int main(int argc, char **argv){
 	memcpy(init_req+1, req_filename, PACKET_SIZE);
 	send_buffer(argv[1], global_port, init_req, PACKET_SIZE+1);
 
+	remote_conn.sin_family = AF_INET;
+	remote_conn.sin_addr.s_addr = inet_addr(argv[1]);
+	remote_conn.sin_port = htons(global_port);
+
 	myfile = fopen(argv[4], "wb");	
 	struct timeval before;
 	gettimeofday(&before, NULL);
 	//Listen for file packets
+	alarm(2);
 	mylisten(global_port, &myloop, &myhandle_packet);
 	fclose(myfile);
 
@@ -54,6 +60,7 @@ int myloop(){
 
 void myhandle_packet(int size, char* payload, struct sockaddr_in* local,
 		struct sockaddr_in* remote){
+	alarm(0);
 	remote->sin_port = htons(global_port);
 	int combined_size = PACKET_SIZE +1;
 	printf("bytes received: %d\n", size);

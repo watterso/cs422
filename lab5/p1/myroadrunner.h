@@ -12,11 +12,11 @@
 #include <unistd.h>
 
 #define DEFAULT_PORT 54269
-#define FRAME_SIZE 24				//# of packets per frame 
-#define PACKET_IND_LIMIT 256
+#define FRAME_SIZE 12				//# of packets per frame 
+#define PACKET_IND_LIMIT 128
 #define PACKET_SIZE 1024		//# of bytes per packet
 #define PAYLOAD_SIZE (PACKET_SIZE*FRAME_SIZE)
-#define WINDOW_SIZE 50			//# of packets per window
+#define WINDOW_SIZE 25 		//# of packets per window
 
 typedef struct
 {
@@ -29,7 +29,7 @@ int req_fd;
 int global_port;
 int packet_index;
 FILE * myfile;
-struct sockaddr_in* remote_conn;
+struct sockaddr_in remote_conn;
 
 struct timeval before;
 struct timeval after;
