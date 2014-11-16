@@ -66,6 +66,7 @@ void myhandle_packet(int size, char* payload, struct sockaddr_in* local,
 	printf("bytes received: %d\n", size);
 	//Integer division truncating means incomplete packets go unnoticed
 	int num_pot_packets = size/(combined_size);	
+	if(num_pot_packets == 0) num_pot_packets++;
 	//All Indices 0's means done	
 	int sum_packet_indices = 0;
 	int i =0;

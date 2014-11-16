@@ -81,7 +81,8 @@ void mypacket_handler(int num_received, char* payload, struct sockaddr_in* local
 		}
 		cnt++;
 	}
-	if(cnt!=i){
+	printf("peek_tot:%d, i:%d\n", total_peek, i);
+	/*if(cnt!=i || cnt==0){
 		char c = *(payload+((cnt+1)*(PACKET_SIZE+1))+PACKET_SIZE);
 		int j = 0;
 		while(c==0 && j<PACKET_SIZE){
@@ -93,7 +94,8 @@ void mypacket_handler(int num_received, char* payload, struct sockaddr_in* local
 		send_buffer_sock(*remote, buffer, cnt*(PACKET_SIZE+1)+j);
 	}else{
 		send_buffer_sock(*remote, buffer, i*(PACKET_SIZE+1));
-	}
+	}*/
+	send_buffer_sock(*remote, buffer, total_peek);
 	int num_read = circ_write(req_fd, diff*PACKET_SIZE);
 	printf("last_packet_sent: %d\n", last_packet_sent);
 	if(num_read == 0 && last_packet_rec == last_packet_sent){
