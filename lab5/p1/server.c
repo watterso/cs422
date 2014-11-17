@@ -37,7 +37,7 @@ void mypacket_handler(int num_received, char* payload, struct sockaddr_in* local
 		struct sockaddr_in* remote){
 	char last_packet_rec = *payload;
 	printf("last packet (from client): %d\n", last_packet_rec);
-	remote->sin_port = htons(global_port);
+	remote->sin_port = htons(CLIENT_LISTEN);
 	if(req_fd == -1){
 		//First request, setup
 		strncpy(req_filename, (payload + 1), (size_t) (num_received - 1));
@@ -66,10 +66,12 @@ void mypacket_handler(int num_received, char* payload, struct sockaddr_in* local
 	int cnt = 0; //count of fully read packets
 	int last_packet_sent =last_packet_rec;
 	for(i; i<FRAME_SIZE && total_peek < circ_size; i++){
+		cnt++;
+		printf("tot peek: %d, circ_size:%d\n", total_peek, circ_size);
 		last_packet_sent = (last_packet_rec + i + 1) % PACKET_IND_LIMIT;
 		buffer[i*(PACKET_SIZE+1)] = last_packet_sent; //+1 because we want the 1 after last_packet_rec
 		int payload_offset = i*(PACKET_SIZE+1) + 1;	// +1 to start after the index byte
-		int	num_peek = circ_peek(buffer+payload_offset, PACKET_SIZE, total_peek);
+		int num_peek = circ_peek(buffer+payload_offset, PACKET_SIZE, total_peek);
 		total_peek += num_peek;
 		printf("%d: %d peeked\n", (last_packet_rec + i + 1), num_peek);
 		if(num_peek < PACKET_SIZE){
@@ -78,7 +80,6 @@ void mypacket_handler(int num_received, char* payload, struct sockaddr_in* local
 			memset(buffer+payload_offset+num_peek, 0, PACKET_SIZE - num_peek);
 			break;
 		}
-		cnt++;
 	}
 	printf("peek_tot:%d, i:%d\n", total_peek, i);
 	/*if(cnt!=i || cnt==0){
@@ -94,7 +95,8 @@ void mypacket_handler(int num_received, char* payload, struct sockaddr_in* local
 	}else{
 		send_buffer_sock(*remote, buffer, i*(PACKET_SIZE+1));
 	}*/
-	send_buffer_sock(*remote, buffer, total_peek+i+1);
+	printf("i:%d, cnt:%d\n", i, cnt);
+	send_buffer_sock(*remote, buffer, total_peek+cnt);
 	int num_read = circ_write(req_fd, diff*PACKET_SIZE);
 	printf("last_packet_sent: %d\n", last_packet_sent);
 	if(num_read == 0 && last_packet_rec == last_packet_sent){
@@ -105,8 +107,8 @@ void mypacket_handler(int num_received, char* payload, struct sockaddr_in* local
 void send_eof(struct sockaddr_in* remote){
 		//EOF
 		printf("EOF\n");
-		char eof_err[FRAME_SIZE*(PACKET_SIZE+1)] = {0};
-		send_buffer_sock(*remote, eof_err, FRAME_SIZE*(PACKET_SIZE+1));
+		char eof_err[2*(PACKET_SIZE+1)] = {0};
+		send_buffer_sock(*remote, eof_err, 2*(PACKET_SIZE+1));
 		//reset server state
 		close(req_fd);
 		req_fd = -1;

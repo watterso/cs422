@@ -2,7 +2,7 @@
 
 //Read n bytes from file descriptor fd and insert into circular buffer 
 int circ_write(int fd, int n){
-	printf("write:\n\tind:%d\n\tsize:%d\n\tspace:%d\n", circ_index, circ_size, circ_free_space());
+//	printf("write:\n\tind:%d\n\tsize:%d\n\tspace:%d\n", circ_index, circ_size, circ_free_space());
 	int to_write = n > circ_free_space() ? circ_free_space() : n;
 	if(to_write == 0) return 0;
 
@@ -26,7 +26,8 @@ int circ_peek(char* target, int n, int offset){
 	int cnt = 0;
 	int max = n > circ_size ? circ_size : n;
 	if(offset > circ_size) return 0;
-	for(i; i<n && i<circ_size; i++){
+	int limit = (circ_size-offset) > n ? n: circ_size-offset;
+	for(i; i<limit; i++){
 		int loc = (circ_index+offset + i) % CIRC_MAX_SIZE;
 		target[i] = circ_window[loc];
 		cnt++;

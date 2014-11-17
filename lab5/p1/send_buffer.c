@@ -28,7 +28,7 @@ void send_buffer_sock(struct sockaddr_in targ, char* payload, int size){
 	printf("trying to send %d bytes\n", size);
 	printf("sending to %d at %s\n", ntohs(targ.sin_port), inet_ntoa(targ.sin_addr));
 	if(sendto(socket_fd, payload, size, 0, (struct sockaddr *)&targ, sizeof(targ)) < 0) {
-		printf("Failed to send packet\n");
+		printf("Failed to send packet:%s\n", strerror(errno));
 		exit(-1);
 	}
 }

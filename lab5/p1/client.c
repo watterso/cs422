@@ -42,7 +42,7 @@ int main(int argc, char **argv){
 	gettimeofday(&before, NULL);
 	//Listen for file packets
 	alarm(2);
-	mylisten(global_port, &myloop, &myhandle_packet);
+	mylisten(CLIENT_LISTEN, &myloop, &myhandle_packet);
 	fclose(myfile);
 
 	struct timeval after;
@@ -66,7 +66,7 @@ void myhandle_packet(int size, char* payload, struct sockaddr_in* local,
 	printf("bytes received: %d\n", size);
 	//Integer division truncating means incomplete packets go unnoticed
 	int num_pot_packets = size/(combined_size);	
-	if(num_pot_packets == 0) num_pot_packets++;
+	if(size%combined_size>0) num_pot_packets++;
 	//All Indices 0's means done	
 	int sum_packet_indices = 0;
 	int i =0;
@@ -100,7 +100,7 @@ void myhandle_packet(int size, char* payload, struct sockaddr_in* local,
 		}
 	}
 	printf("received %d packets, last: %d\n", num_packets, prev_pack_ind);
-	char latest_packet_ind = (char)prev_pack_ind; //-1 for 0 index
+	char latest_packet_ind = (char)prev_pack_ind; 
 	packet_index = prev_pack_ind;
 	//Send ACK with last seen index
 	char buffer[combined_size];
