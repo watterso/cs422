@@ -12,11 +12,12 @@
 #include <time.h>
 #include <unistd.h>
 
+#define PACKETLOSS 2
 #define DEFAULT_PORT 54269
 #define CLIENT_LISTEN 54268
-#define FRAME_SIZE 3 				//# of packets per frame 
+#define FRAME_SIZE 6 				//# of packets per frame 
 #define PACKET_IND_LIMIT 128
-#define PACKET_SIZE 512		//# of bytes per packet
+#define PACKET_SIZE 1024		//# of bytes per packet
 #define PAYLOAD_SIZE (PACKET_SIZE*FRAME_SIZE)
 #define WINDOW_SIZE (2*FRAME_SIZE)+1 		//# of packets per window
 

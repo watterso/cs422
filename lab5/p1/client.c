@@ -24,7 +24,7 @@ int main(int argc, char **argv){
 
 	//printf("len: %d, for: '%s'\n", strlen(argv[3]), argv[3]);
 	strcpy(req_filename, argv[3]);
-	printf("file_req:%s\n", req_filename);
+	//printf("file_req:%s\n", req_filename);
 	strcat(argv[3], "\0");
 
 	//Send initial request
@@ -40,8 +40,9 @@ int main(int argc, char **argv){
 	myfile = fopen(argv[4], "wb");	
 	struct timeval before;
 	gettimeofday(&before, NULL);
+	//Set alarm for timeout resend
+	alarm(PACKETLOSS);
 	//Listen for file packets
-	alarm(2);
 	mylisten(CLIENT_LISTEN, &myloop, &myhandle_packet);
 	fclose(myfile);
 
@@ -60,21 +61,27 @@ int myloop(){
 
 void myhandle_packet(int size, char* payload, struct sockaddr_in* local,
 		struct sockaddr_in* remote){
+	//data received, disable timeout resend
 	alarm(0);
 	remote->sin_port = htons(global_port);
+	//Number of bytes actually from the file
+	int total_peek =0;
+	memcpy(&total_peek, payload, sizeof(total_peek));
+	//increment past the size field
+	payload = payload+4;
 	int combined_size = PACKET_SIZE +1;
-	printf("bytes received: %d\n", size);
-	//Integer division truncating means incomplete packets go unnoticed
-	int num_pot_packets = size/(combined_size);	
-	if(size%combined_size>0) num_pot_packets++;
+	//printf("bytes received: %d, total_peek:%d\n", size, total_peek);
+	int num_pot_packets = (size-4)/(combined_size);	
+	if((size-4)%combined_size>0) num_pot_packets++;
 	//All Indices 0's means done	
 	int sum_packet_indices = 0;
 	int i =0;
 	int prev_pack_ind = -1;
 	int num_packets = 0;
+	//count the number of correctly numbered packets in the payload
 	for(i; i<num_pot_packets; i++){
 		char pack_ind = payload[i*combined_size];
-		printf("%d|", pack_ind);
+	//	printf("%d|", pack_ind);
 		if(prev_pack_ind!= -1){
 			int tmp = (prev_pack_ind+1)%PACKET_IND_LIMIT;
 			if(pack_ind != tmp) break; //If the next packet we want isn't there stop checking
@@ -87,6 +94,7 @@ void myhandle_packet(int size, char* payload, struct sockaddr_in* local,
 		sum_packet_indices += pack_ind;
 	}
 	if(sum_packet_indices == 0){
+		//verify the EOF signal
 		i = 0;
 		int dbl_chk_sum = 0;
 		for(i;i<num_pot_packets;i++){
@@ -99,30 +107,36 @@ void myhandle_packet(int size, char* payload, struct sockaddr_in* local,
 			return;
 		}
 	}
-	printf("received %d packets, last: %d\n", num_packets, prev_pack_ind);
+	if((size-4)<=total_peek){
+		//last packet got truncated enroute, re-request this one
+		num_packets--;
+		prev_pack_ind = (prev_pack_ind - 1) % PACKET_IND_LIMIT;
+		if(prev_pack_ind<0) prev_pack_ind+=PACKET_IND_LIMIT;
+	}
+	//printf("received %d packets, last: %d\n", num_packets, prev_pack_ind);
 	char latest_packet_ind = (char)prev_pack_ind; 
 	packet_index = prev_pack_ind;
-	//Send ACK with last seen index
+	//Send ACK with index of last full packet 
 	char buffer[combined_size];
 	buffer[0] = latest_packet_ind;
 	strcpy(buffer+1, req_filename);
 	send_buffer_sock(*remote, buffer, combined_size);
 	memcpy(&remote_conn, remote, sizeof(remote_conn));
-	alarm(2);
+	alarm(PACKETLOSS);
 
 	i = 0;
 	for(i; i<num_packets-1; i++){
+		//write all but the last packet
 		fwrite(payload+(i*combined_size)+1, PACKET_SIZE, 1, myfile);
 	}
-	/*char c = *(payload+(i*combined_size)+PACKET_SIZE);
-	int j = 0;
-	while(c==0 && j<PACKET_SIZE){
-		c = *(payload+(i*combined_size)+PACKET_SIZE-j);
-		if(c==0) j++;
+	int last_packet_size = 0; 
+	if((size-4)<=total_peek){
+		//last sent packet was truncated ==> last valid packet is full size
+		last_packet_size = PACKET_SIZE;	
+	}else{
+		//last packet is less than PACKET_SIZE
+		last_packet_size = total_peek - (num_packets-1)*PACKET_SIZE;	
 	}
-	fwrite(payload+((num_packets-1)*combined_size)+1, PACKET_SIZE-j, 1, myfile);
-	printf("packet is %d bytes long\n", PACKET_SIZE-j);*/
-	int last_packet_size = size-(num_packets-1)*combined_size-1;
-	printf("last packet is %d bytes long\n", last_packet_size);
+	//printf("last packet is %d bytes long\n", last_packet_size);
 	fwrite(payload+((num_packets-1)*combined_size)+1, last_packet_size, 1, myfile);
 }
