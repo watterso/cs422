@@ -1,0 +1,4 @@
+NOTES:
+1. I have prepended a size field 4bytes long to by Frames, not depicted in my writeup
+2. There is a timeout alarm, defaulted to 2ms, sometimes strange network behavior causes even the initial request to timeout, giving times that are 2ms slower.
+3. All values to be modified are in myroadrunner.h
