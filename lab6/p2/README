@@ -1,0 +1,1 @@
+Sometimes java has difficulty detecting that the other end of the socket is closed. If the program appears to have hung, ^c it, the file should be transfered.
